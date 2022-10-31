@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Tarea4PM1</string>
+    <string name="btn_guardar">Salvar Imagen</string>
+    <string name="btn_contactos">Imagenes Salvadas</string>
+</resources>
