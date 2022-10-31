@@ -4,7 +4,7 @@ import java.sql.Blob;
 
 public class Transacciones {
     //Nombre de la Base de Datos
-    public static final String NameDatabase = "PMT4DB";
+    public static final String NameDatabase = "PMT4DB1";
 
     /*Creacion de la base de Datos*/
     public static final String TablaImagenes = "imagenes";
