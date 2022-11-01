@@ -4,7 +4,7 @@ import java.sql.Blob;
 
 public class Transacciones {
     //Nombre de la Base de Datos
-    public static final String NameDatabase = "PMT4DB1";
+    public static final String NameDatabase = "PMT4DB3";
 
     /*Creacion de la base de Datos*/
     public static final String TablaImagenes = "imagenes";
@@ -16,7 +16,7 @@ public class Transacciones {
     //DDL
     public static final String createTableImagenes = "CREATE TABLE "+Transacciones.TablaImagenes+
             " (id INTEGER PRIMARY KEY AUTOINCREMENT," +
-            "image BLOB)";
+            "image String)";
 
     public static final String GetImagenes = "SELECT * FROM "+Transacciones.TablaImagenes;
 

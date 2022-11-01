@@ -1,5 +1,7 @@
 package com.finsol.tarea4pm1.tablas;
 
+import java.sql.Blob;
+
 public class Imagenes {
     public Integer id;
     public String image;

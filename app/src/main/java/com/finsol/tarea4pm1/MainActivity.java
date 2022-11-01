@@ -15,10 +15,13 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -29,6 +32,7 @@ import com.finsol.tarea4pm1.tablas.Transacciones;
 import com.google.firebase.crashlytics.buildtools.reloc.org.apache.http.util.ByteArrayBuffer;
 
 import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -52,12 +56,14 @@ public class MainActivity extends AppCompatActivity {
     static final int peticion_acceso_foto = 200;
     ImageView objetoImagen;
     Button btntakepotho;
-    String pathImage = "";
+    String pathImage = "", imagenString="";
     Uri fotoUri;
     Button btnFoto;
     String id = "";
     Boolean extras = false;
     byte[] logoImage;
+
+    static Bitmap global_Bitman;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,14 +87,16 @@ public class MainActivity extends AppCompatActivity {
         btnSalvar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                        guardarRegistro();
+                if(validaciones()){
+                    guardarRegistro();
                 }
+            }
         });
 
         btnContactos.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, Activity_Imagen.class);
+                Intent intent = new Intent(MainActivity.this, ActivityList.class);
                 startActivity(intent);
             }
         });
@@ -165,31 +173,20 @@ public class MainActivity extends AppCompatActivity {
         Log.i("FOTO", pathImage.toString());
 
         logoImage = getLogoImage(pathImage);
+        Log.i("IMAGEN: ",imagenString);
 
         return image;
-    }
-
-    private void mostrarAlerta(String mensaje) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-        builder.setMessage(mensaje)
-                .setTitle("Error")
-                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        dialogInterface.cancel();
-                    }
-                });
-
-        AlertDialog dialog = builder.create();
-        dialog.show();
     }
 
     private void guardarRegistro() {
 
             SQLiteConexion conexion = new SQLiteConexion(this, Transacciones.NameDatabase, null, 1);
             SQLiteDatabase db = conexion.getWritableDatabase();
+
+            //imagenString = convertirImgPngString(pathImage);
             ContentValues values = new ContentValues();
-            values.put(Transacciones.image,logoImage);
+            values.put(Transacciones.image,pathImage);
+        Log.i("FOTO ACTUALIZA", pathImage.toString());
 
             try {
                 Long resultado = db.insert(Transacciones.TablaImagenes, Transacciones.id, values);
@@ -207,30 +204,6 @@ public class MainActivity extends AppCompatActivity {
         pathImage="";
         objetoImagen.setImageResource(R.drawable.contacto);
         btnSalvar.setText(R.string.btn_guardar);
-    }
-
-    private void permisosMostrarFoto(String url) throws IOException {
-        //Validar si el permiso está otorgado
-        if(ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
-            //Otorgar el permiso si no se tiene
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, peticion_acceso_foto);
-        }
-        else{
-            String imageFileName = "";
-            File storageDir = getExternalFilesDir(url);
-            File image = createTempFile(
-                    imageFileName, /* prefix */
-                    ".jpg", /* suffix */
-                    storageDir /* directory */);
-            // Save a file: path for use with ACTION_VIEW intents
-            pathImage = image.getAbsolutePath();
-            Log.i("FOTO ACTUALIZA", pathImage.toString());
-            File foto = new File(pathImage);
-            objetoImagen.setImageURI(Uri.fromFile(foto));
-
-            byte[] logoImage = getLogoImage(pathImage);
-
-        }
     }
 
 
@@ -252,6 +225,30 @@ public class MainActivity extends AppCompatActivity {
             Log.d("ImageManager", "Error: " + e.toString());
         }
         return null;
+    }
+
+    private boolean validaciones() {
+        Boolean validacion = true;
+        if (pathImage.toString().length() <= 0) {
+            mostrarAlerta("Debe agregar una foto");
+            validacion = false;
+        }
+        return validacion;
+    }
+
+    private void mostrarAlerta(String mensaje) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setMessage(mensaje)
+                .setTitle("Error")
+                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.cancel();
+                    }
+                });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
 }

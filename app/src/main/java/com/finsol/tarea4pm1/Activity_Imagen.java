@@ -6,7 +6,9 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.util.Base64;
 import android.util.Log;
 import android.widget.ImageView;
 
@@ -14,38 +16,40 @@ import com.finsol.tarea4pm1.configuracion.SQLiteConexion;
 import com.finsol.tarea4pm1.tablas.Transacciones;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 
 public class Activity_Imagen extends AppCompatActivity {
     //Blob
     byte[] accImage;
     ImageView imagen;
+    String path;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_imagen);
         imagen = findViewById(R.id.image);
-        getCurrentAccount();
+        //Verificando si enviaron datos
+        Bundle datos = getIntent().getExtras();
+         String id = ""+datos.getString("id");
+        getCurrentAccount(id);
     }
 
-    public void getCurrentAccount() {
+    public void getCurrentAccount(String id) {
         SQLiteConexion conexion = new SQLiteConexion(this, Transacciones.NameDatabase, null, 1);
         SQLiteDatabase db = conexion.getWritableDatabase();
-        String sql = "SELECT * FROM "+Transacciones.TablaImagenes+ " where id = 1";
+        String sql = "SELECT * FROM "+Transacciones.TablaImagenes+ " where id = "+id;
+
         Cursor cursor = db.rawQuery(sql, new String[]{});
         while (cursor.moveToNext()) {
-            accImage = cursor.getBlob(1);
+            path = cursor.getString(1);
+            Log.i("FOTO ACTUALIZA", path);
         }
-        if (cursor != null && !cursor.isClosed()) {
-            cursor.close();
-        }
-        db.close();
+        
+       db.close();
 
-        ByteArrayInputStream imageStream = new ByteArrayInputStream(accImage);
-        Bitmap theImage= BitmapFactory.decodeStream(imageStream);
-
-        imagen.setImageBitmap(theImage);
-        Log.i("IMAGEN: ",imagen.toString());
+       File foto = new File(path);
+        imagen.setImageURI(Uri.fromFile(foto));
 
     }
 }
