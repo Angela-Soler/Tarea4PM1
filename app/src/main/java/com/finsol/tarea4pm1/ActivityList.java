@@ -43,7 +43,7 @@ public class ActivityList extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 String id = lista.get(i).getId().toString();
-                Toast.makeText(ActivityList.this, listaConcatenada.get(i), Toast.LENGTH_SHORT ).show();
+                Toast.makeText(ActivityList.this, "Cargando Imagen...", Toast.LENGTH_SHORT ).show();
                 Intent intent = new Intent(ActivityList.this, Activity_Imagen.class);
                 intent.putExtra("id", id);
                 startActivity(intent);

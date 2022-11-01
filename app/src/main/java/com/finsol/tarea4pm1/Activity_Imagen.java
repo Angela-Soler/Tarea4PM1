@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.finsol.tarea4pm1.configuracion.SQLiteConexion;
 import com.finsol.tarea4pm1.tablas.Transacciones;
@@ -47,9 +48,13 @@ public class Activity_Imagen extends AppCompatActivity {
         }
         
        db.close();
+        try{
+            File foto = new File(path);
+            imagen.setImageURI(Uri.fromFile(foto));
+        }catch (Exception e){
+            Toast.makeText(Activity_Imagen.this, "Error al cargar imagen...", Toast.LENGTH_SHORT ).show();
+        }
 
-       File foto = new File(path);
-        imagen.setImageURI(Uri.fromFile(foto));
 
     }
 }
